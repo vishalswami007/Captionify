@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CAPTIONIFY</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-image: url(static/background.jpg);
+            background-repeat: repeat;
+            background-size: cover;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: whitesmoke;
+        }
+
+        #upload-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #image-input {
+            display: none;
+        }
+
+        #generate-button {
+            display: inline-block;
+            padding: 10px 20px 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        #generate-button:hover {
+            background-color: #0056b3;
+        }
+
+        #image-container {
+            padding: 15px;
+        }
+
+        #caption {
+            font-size: 18px;
+            font-weight: bold;
+            color: gainsboro;
+        }
+
+        #drop-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100px;
+            width: 150px;
+            background-color: #f5f5f5;
+            border: 2px dashed #aaa;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #drop-area:hover {
+            background-color: gainsboro;
+        }
+
+        #drop-area p {
+            margin: 0;
+            font-size: 16px;
+            color: #666;
+        }
+
+        #drop-area img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        #drop-area.active {
+            background-color: #fff;
+            border-color: #007bff;
+        }
+
+        .center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #upload-button {
+            display: inline-block;
+            padding: 10px 20px 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .bg {
+            background-color: rgba(24, 20, 20, 0.616);
+            padding: 50px 35px;
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+        }
+
+        .rule {
+            color: whitesmoke;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>--CAPTIONIFY--</h1>
+
+
+    <div class="bg">
+        <form action="/submit-data" method="POST" id="upload-form" enctype="multipart/form-data">
+            <label for="image-input">
+                <input type="file" name ='file' id="image-input" accept="image/*" />
+                <input id="upload-button" type="submit" value="submit">
+            </label>
+            <!--<button id="generate-button" type="button">Generate Caption</button>-->
+        </form>
+
+
+        <div class="center">
+            <div id="drop-area">
+                <p>Drag and drop an image here, or click to select an image</p>
+            </div>
+        </div>
+        <div class="rule">After selecting an image please click on Generate to generate the caption!!!</div>
+
+
+        <div id="image-container"></div>
+
+
+        <p id="caption"></p>
+    </div>
+
+
+    <script>
+        var dropArea = document.getElementById('drop-area');
+        var imageInput = document.getElementById('image-input');
+        var imageContainer = document.getElementById('image-container');
+        var generateButton = document.getElementById('generate-button');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+        function preventDefaults(event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.classList.add('active');
+        }
+
+        function unhighlight() {
+            dropArea.classList.remove('active');
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        dropArea.addEventListener('click', function () {
+            imageInput.click();
+        });
+
+        imageInput.addEventListener('change', function (event) {
+            var file = event.target.files[0];
+            if (file) {
+                var image = document.createElement('img');
+                image.src = URL.createObjectURL(file);
+                imageContainer.innerHTML = '';
+                imageContainer.appendChild(image);
+            }
+        });
+
+        generateButton.addEventListener('click', function () {
+            var file = imageInput.files[0];
+            if (file) {
+                generateCaption(file);
+            }
+        });
+
+        function handleDrop(event) {
+            var files = event.dataTransfer.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                if (file.type.startsWith('image/')) {
+                    var image = document.createElement('img');
+                    image.src = URL.createObjectURL(file);
+                    imageContainer.innerHTML = '';
+                    imageContainer.appendChild(image);
+                    imageInput.files = files;
+                    break;
+                }
+            }
+        }
+
+        function generateCaption(imageFile) {
+            // Vishal yha code hoga tumhara.................
+
+            var caption = 'yha likhna hai caption';
+
+            var captionElement = document.getElementById('caption');
+            captionElement.textContent = caption;
+        }
+    </script>
+</body>
+
+</html>
